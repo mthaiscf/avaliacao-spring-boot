@@ -18,9 +18,8 @@ public class EstudanteServiceImpl implements EstudanteService {
 
 		
 	@Override
-	public List<Estudante> buscarEstudantes() {	
-		List<Estudante> estudantes = this.repository.findAll();
-		return estudantes;	
+	public List<Estudante> buscarEstudantes() {
+		return this.repository.findAll();	
 	}
 	
 	@Override
@@ -33,18 +32,30 @@ public class EstudanteServiceImpl implements EstudanteService {
 		if (id == 0) {
 			throw new IllegalArgumentException("Identificador inválido:" + id);
 		}
-		Estudante estudanteprocurado = this.repository.findById(id);
-		return estudanteprocurado;
+		return this.repository.findById(id);
 	}
 
 	@Override
-	public void atualizarEstudante(@Valid Estudante estudante) {
-		repository.save(estudante);
+	public void atualizarEstudante(@Valid Estudante estudante, long id) {
+		
+		Estudante estudanteUpdate = repository.findById(id);
+		
+		if(estudanteUpdate != null) {
+			
+			estudanteUpdate.setNome(estudante.getNome());
+			estudanteUpdate.setEmail(estudante.getEmail());
+			estudanteUpdate.setTelefone(estudante.getTelefone());
+			estudanteUpdate.setCurso(estudante.getCurso());
+			
+			repository.save(estudanteUpdate);
+		}
 	}
 	
 	@Override
-	public void excluirEstudante(long id) {	
-		this.repository.deleteById(id);
+	public void excluirEstudante(long id) {
+		if(this.repository.findById(id) != null) {
+			this.repository.deleteById(id);
+		}
 	}	
 	
 }

@@ -1,8 +1,12 @@
 package br.com.tokiomarine.seguradora.avaliacao.entidade;
 
-import javax.persistence.*;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Estudante {
@@ -10,6 +14,7 @@ public class Estudante {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
 	@NotBlank(message = "Nome é Obrigatório")
@@ -25,6 +30,8 @@ public class Estudante {
 	
 	private String curso;
 	
+	
+	protected Estudante() {}
 	
 	public Estudante(String nome, String email, String telefone, String matricula, String curso) {		
 		this.nome = nome;

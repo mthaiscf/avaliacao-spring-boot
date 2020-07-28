@@ -56,7 +56,7 @@ public class EstudanteController {
 			return "atualizar-estudante";
 		}
 
-		service.atualizarEstudante(estudante);
+		service.atualizarEstudante(estudante, id);
 
 		model.addAttribute("estudantes", service.buscarEstudantes());
 		return "index";

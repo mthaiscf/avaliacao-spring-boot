@@ -40,7 +40,7 @@
 
 							<div class="form-group col-md-8">
 								<label for="telefone" class="col-form-label">Telefone</label> <input
-									type="text" th:field="*{telefone}" class="form-control"
+									type="number" th:field="*{telefone}" class="form-control"
 									id="telefone" placeholder="Telefone"> <span
 									th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"
 									class="text-danger"></span>
@@ -48,7 +48,7 @@
 							
 							<div class="form-group col-md-8">
 								<label for="matricula" class="col-form-label">Matricula</label> <input
-									type="text" th:field="*{matricula}" class="form-control" id="matricula"
+									type="number" th:field="*{matricula}" class="form-control" id="matricula"
 									placeholder="Matricula"> <span
 									th:if="${#fields.hasErrors('matricula')}" th:errors="*{matricula}"
 									class="text-danger"></span>

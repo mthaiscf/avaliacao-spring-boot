@@ -3,61 +3,66 @@ package br.com.tokiomarine.seguradora.avaliacao.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.tokiomarine.seguradora.avaliacao.entidade.Estudante;
-import br.com.tokiomarine.seguradora.avaliacao.repository.EstudanteRepository;
+import br.com.tokiomarine.seguradora.avaliacao.service.EstudanteService;
 
 
 @Controller
 @RequestMapping(value="/estudantes")
 public class EstudanteRestController {
 
-	@Autowired
-	private EstudanteRepository estudanteRepository;
 	
-	@GetMapping(value="/{id}",produces ="application/json")
-	public ResponseEntity<Estudante> findById(@PathVariable(value = "id")Long id) {
-		Optional<Estudante> estudante=  estudanteRepository.findById(id);		
-		return  new ResponseEntity<Estudante>(estudante.get(), HttpStatus.OK);		
-	}
-	
-	@GetMapping(value="/",produces = "application/json")
-	public ResponseEntity<List<Estudante>>findAll(){
-		List<Estudante>list = (List<Estudante>) estudanteRepository.findAll();
-		return new ResponseEntity<List<Estudante>>(list, HttpStatus.OK);		
-	}
-	
-	@PostMapping(value="/",produces = "application/json")
-	public ResponseEntity<Estudante>save(@RequestBody Estudante estudante){
+		// TODO caso você não conheça THEMELEAF faça a implementação dos métodos em forma de RESTCONTROLLER (seguindo o padrão RESTFUL)
+		@Autowired
+		private EstudanteService estudanteService;
+
+		// TODO IMPLEMENTAR A LISTAGEM DE ESTUDANTES (GET) - all
+		@RequestMapping(method=RequestMethod.GET)
+		public ResponseEntity<List<Estudante>> findAll() {
+			List<Estudante> list = estudanteService.buscarEstudantes();
+			return ResponseEntity.ok().body(list);
+		}
 		
-		Estudante estudanteSalvo = estudanteRepository.save(estudante);
+		// (GET) - one by id
+		@RequestMapping(value="/{id}", method=RequestMethod.GET)
+		public ResponseEntity<Estudante> findById(@PathVariable Integer id) {
+			Estudante e = estudanteService.buscarEstudante(id);
+			return ResponseEntity.ok().body(e);
+		}
 		
-		return new ResponseEntity<Estudante>(estudanteSalvo,HttpStatus.OK);	
-	}
+		// TODO IMPLEMENTAR CADASTRO DE ESTUDANTES (POST)
+		@RequestMapping(method=RequestMethod.POST)
+		public ResponseEntity<Void> insert(@Valid @RequestBody Estudante estudante){
+			estudanteService.cadastrarEstudante(estudante);
+			URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(estudante.getId()).toUri();			
+			return ResponseEntity.created(uri).build();
+		}
+		
+		// TODO IMPLEMENTAR ATUALIZACAO DE ESTUDANTES (PUT)
+		@RequestMapping(value="/{id}",method=RequestMethod.PUT)
+		public ResponseEntity<Void> update(@Valid  @RequestBody Estudante estudante, @PathVariable Integer id){
+			estudanteService.atualizarEstudante(estudante, id);
+			return ResponseEntity.noContent().build();
+		}
+		
+		// TODO IMPLEMENTAR A EXCLUSÃO DE ESTUDANTES (DELETE)
+		@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+		public ResponseEntity<Void> delete(@PathVariable Integer id){
+			estudanteService.excluirEstudante(id);
+			return ResponseEntity.noContent().build();
+		}
 	
-	@PutMapping(value="/",produces = "application/json")
-	public ResponseEntity<Estudante>update(@RequestBody Estudante estudante){
-		
-		Estudante estudanteAlterado = estudanteRepository.save(estudante);
-		
-		return new ResponseEntity<Estudante>(estudanteAlterado, HttpStatus.OK);	
-	}
-	
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void excluir(@PathVariable("id") Long id) {	 
-	   estudanteRepository.deleteById(id);
-	}
 }
