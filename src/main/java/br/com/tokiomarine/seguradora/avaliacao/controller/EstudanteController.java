@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +24,9 @@ public class EstudanteController {
 	@Autowired
 	EstudanteService estudanteService;
 	
-
 	@GetMapping("criar")
-	public String iniciarCadastro(Estudante estudante) {
-		return "cadastrar-estudante";
+	public ModelAndView iniciarCadastro(Estudante estudante, ModelMap model) {
+		return new ModelAndView("/cadastrar-estudante", model);
 	}	
 	
 	@GetMapping("listar")
@@ -40,29 +38,31 @@ public class EstudanteController {
 	
 	
 	@PostMapping("add")
-	public String adicionarEstudante(@Valid Estudante estudante, BindingResult result, Model model) {
+	public ModelAndView adicionarEstudante(@Valid Estudante estudante, BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
-			return "cadastrar-estudante";
+			return new ModelAndView("/cadastrar-estudante", model);
 		}
 		estudanteService.cadastrarEstudante(estudante);
-		return "redirect:listar";
+		List<Estudante> estudantes = estudanteService.buscarEstudantes();
+        model.addAttribute("estudantes", estudantes);
+        return new ModelAndView("/index", model);
 	}
 
 	@GetMapping("editar/{id}")
-	public String exibirEdicaoEstudante(long id, Model model) {
+	public ModelAndView exibirEdicaoEstudante(@PathVariable("id") long id, ModelMap model) {
 		Estudante estudante = estudanteService.buscarEstudante(id);
 		model.addAttribute("estudante", estudante);
-		return "atualizar-estudante";
+		return new ModelAndView("atualizar-estudante", model);
 	}
 
 	@PostMapping("atualizar/{id}")
-	public String atualizarEstudante(@PathVariable("id") long id, @Valid Estudante estudante, BindingResult result, Model model) {
+	public ModelAndView atualizarEstudante(@PathVariable("id") long id, @Valid Estudante estudante, BindingResult result, ModelMap model) {	
 		if (result.hasErrors()) {
-			return "atualizar-estudante";
+			return new ModelAndView("atualizar-estudante", model);
 		}
 		estudanteService.atualizarEstudante(estudante, id);
 		model.addAttribute("estudantes", estudanteService.buscarEstudantes());
-		return "index";
+		return new ModelAndView("/index", model);
 	}
 
 	@GetMapping("apagar/{id}")
