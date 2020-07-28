@@ -20,8 +20,6 @@
 					</p>
 					<div class="col-md-10">
 					
-						
-					
 						<h2 th:case="null">Nenhum estudante cadastrado</h2>
 						<div th:case="*">
 							<table class="table table-striped table-responsive-md">
@@ -37,7 +35,6 @@
 									</tr>
 								</thead>
 								<tbody>
-									
 									<tr th:each="estudante : ${estudantes}">
 										<td th:text="${estudante.nome}"></td>
 										<td th:text="${estudante.email}"></td>

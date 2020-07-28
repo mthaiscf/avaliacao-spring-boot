@@ -1,7 +1,6 @@
 package br.com.tokiomarine.seguradora.avaliacao.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 

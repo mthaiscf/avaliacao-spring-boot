@@ -1,5 +1,7 @@
 package br.com.tokiomarine.seguradora.avaliacao.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,9 @@ import br.com.tokiomarine.seguradora.avaliacao.service.EstudanteService;
 @RequestMapping("/estudantes/")
 public class EstudanteController {
 
-
-	EstudanteService service;
+	@Autowired
+	EstudanteService estudanteService;
+	
 
 	@GetMapping("criar")
 	public String iniciarCadastro(Estudante estudante) {
@@ -30,22 +33,24 @@ public class EstudanteController {
 	
 	@GetMapping("listar")
 	public ModelAndView listar(ModelMap model) {
-        model.addAttribute("estudantes", service.buscarEstudantes());
+		List<Estudante> estudantes = estudanteService.buscarEstudantes();
+        model.addAttribute("estudantes", estudantes);
         return new ModelAndView("/index", model);
 	}
-
+	
+	
 	@PostMapping("add")
 	public String adicionarEstudante(@Valid Estudante estudante, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return "cadastrar-estudante";
 		}
-		service.cadastrarEstudante(estudante);
+		estudanteService.cadastrarEstudante(estudante);
 		return "redirect:listar";
 	}
 
 	@GetMapping("editar/{id}")
 	public String exibirEdicaoEstudante(long id, Model model) {
-		Estudante estudante = service.buscarEstudante(id);
+		Estudante estudante = estudanteService.buscarEstudante(id);
 		model.addAttribute("estudante", estudante);
 		return "atualizar-estudante";
 	}
@@ -55,22 +60,20 @@ public class EstudanteController {
 		if (result.hasErrors()) {
 			return "atualizar-estudante";
 		}
-
-		service.atualizarEstudante(estudante, id);
-
-		model.addAttribute("estudantes", service.buscarEstudantes());
+		estudanteService.atualizarEstudante(estudante, id);
+		model.addAttribute("estudantes", estudanteService.buscarEstudantes());
 		return "index";
 	}
 
 	@GetMapping("apagar/{id}")
-	public String apagarEstudante(@PathVariable("id") long id, Model model) {
-		
-		model.addAttribute("estudantes", service.buscarEstudantes());
-		if (service.buscarEstudante(id) != null) {
-			return "apagar-estudante";
+	public ModelAndView apagarEstudante(@PathVariable("id") long id, ModelMap model) {		
+		if (estudanteService.buscarEstudante(id) != null) {
+			estudanteService.excluirEstudante(id);
 		}
-		service.excluirEstudante(id);
-		return "index";
-		
+		List<Estudante> estudantes = estudanteService.buscarEstudantes();
+        model.addAttribute("estudantes", estudantes);
+        return new ModelAndView("/index", model);	
 	}
+	
+	
 }
